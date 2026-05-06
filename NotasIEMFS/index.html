@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Sistema de notas IEMFS: calificaciones e inasistencias por grupo y materia.">
+  <meta name="theme-color" content="#075985">
+  <meta name="color-scheme" content="light dark">
+  <title>Sistema de Notas · IEMFS</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=42">
+</head>
+<body>
+
+  <div id="login-gate" class="login-gate">
+    <div class="login-card card">
+      <div class="login-card__brand">
+        <img class="login-card__logo" src="images/logo.webp" width="200" height="300" alt="" decoding="async">
+      </div>
+      <h1 class="login-card__title">Sistema de Notas · IEMFS</h1>
+      <div class="login-mode-tabs" role="tablist" aria-label="Tipo de acceso">
+        <button type="button" class="login-mode-tab is-active" id="login-tab-staff" role="tab" aria-selected="true">Docente / Coordinación</button>
+        <button type="button" class="login-mode-tab" id="login-tab-est" role="tab" aria-selected="false">Soy estudiante</button>
+      </div>
+      <form id="login-form" novalidate>
+        <div id="login-fields-staff">
+          <div class="field-group">
+            <label for="login-docente-codigo">Código de usuario</label>
+            <input type="text" id="login-docente-codigo" class="input" name="docente" autocomplete="username">
+          </div>
+          <div class="field-group">
+            <label for="login-clave">Contraseña</label>
+            <input type="password" id="login-clave" class="input" name="clave" autocomplete="current-password" placeholder="••••••••">
+            <label class="login-check login-check--clave">
+              <input type="checkbox" id="login-mostrar-clave" autocomplete="off">
+              <span>Mostrar contraseña</span>
+            </label>
+          </div>
+        </div>
+        <div id="login-fields-est" class="is-hidden" hidden>
+          <div class="field-group">
+            <label for="login-est-documento">Documento</label>
+            <input type="text" id="login-est-documento" class="input" name="documento" autocomplete="username" inputmode="numeric">
+          </div>
+          <div class="field-group">
+            <label for="login-est-pin">PIN</label>
+            <input type="password" id="login-est-pin" class="input" name="pin" autocomplete="current-password" placeholder="PIN">
+            <label class="login-check login-check--clave">
+              <input type="checkbox" id="login-mostrar-pin" autocomplete="off">
+              <span>Mostrar PIN</span>
+            </label>
+          </div>
+        </div>
+        <label class="login-check">
+          <input type="checkbox" id="login-recordar">
+          <span>Recordarme en este equipo</span>
+        </label>
+        <p id="login-error" class="login-error is-hidden" role="alert"></p>
+        <button type="submit" class="btn btn--primary btn--block" id="btn-login">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-shell" class="app-shell" hidden>
+    <a class="skip-link no-print" href="#main">Ir al contenido</a>
+
+    <header class="app-header no-print">
+      <div class="app-header__inner app-header__row">
+        <div class="app-brand">
+          <span class="app-brand__mark">
+            <img class="app-brand__logo" src="images/logo.webp" width="200" height="300" alt="" decoding="async">
+          </span>
+          <div>
+            <h1 class="app-brand__title">Sistema de Notas</h1>
+            <p class="app-brand__subtitle">Calificaciones e inasistencias por curso</p>
+          </div>
+        </div>
+        <div class="app-header__actions">
+          <span id="auth-session-badge" class="auth-session-badge" hidden></span>
+          <button type="button" id="btn-logout" class="btn-logout" title="Cerrar sesión" aria-label="Cerrar sesión">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 17H6a2 2 0 01-2-2V9a2 2 0 012-2h4M16 14l3-3-3-3M19 11H9"/></svg>
+          </button>
+          <button type="button" id="btn-theme" class="theme-toggle" title="Cambiar tema" aria-label="Activar modo oscuro">
+            <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </span>
+            <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 14.5A8.5 8.5 0 019.5 3a8.06 8.06 0 003.5 15.5 8.5 8.5 0 008-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container">
+      <div id="banner-solo-lectura" class="banner-solo-lectura is-hidden" role="status" hidden>
+        <p>
+          <strong>Modo coordinación:</strong> aquí puede revisar el <strong>estado de matrícula</strong> de los estudiantes (y actualizarlo cuando lo necesite), consultar sus <strong>notas por materia</strong>, el resumen de faltas y los listados del grupo.
+          Para <strong>cambiar matrícula</strong> o hacer un <strong>traslado a otro curso</strong>, abra la <strong>ficha</strong> del estudiante e ingrese la <strong>clave de administración</strong> en el formulario correspondiente.
+        </p>
+      </div>
+      <div id="banner-estudiante" class="banner-estudiante is-hidden" role="status" hidden>
+        <p>
+          <strong>Modo estudiante:</strong> elige el <strong>periodo académico</strong> para ver las notas de ese tramo (tabla de abajo y expediente). Para el detalle por asignatura, selecciona la <strong>materia</strong> y pulsa <strong>Abrir expediente</strong>.
+        </p>
+      </div>
+      <section class="toolbar card card--toolbar no-print" aria-label="Filtros y acciones">
+        <div class="toolbar__row toolbar__row--split">
+          <div id="toolbar-grupo-wrap" class="field-group">
+            <label for="grupo">Grupo</label>
+            <select id="grupo" class="input"></select>
+          </div>
+          <div class="field-group">
+            <label for="materia">Materia</label>
+            <select id="materia" class="input"></select>
+          </div>
+          <div id="toolbar-doc-periodo-wrap" class="field-group field-group--doc-periodo is-hidden" hidden>
+            <label for="doc-periodo-cal">Periodo (notas del grupo)</label>
+            <select id="doc-periodo-cal" class="input"></select>
+          </div>
+          <div id="toolbar-est-periodo-wrap" class="field-group field-group--est-periodo is-hidden" hidden>
+            <label for="est-periodo-cal">Periodo académico</label>
+            <select id="est-periodo-cal" class="input"></select>
+          </div>
+          <div id="toolbar-expediente-wrap" class="field-group field-group--expediente-est" hidden>
+            <span id="toolbar-expediente-label" class="field-group__label-text">Expediente</span>
+            <button
+              type="button"
+              id="btn-expediente-estudiante"
+              class="btn btn--primary"
+              aria-describedby="toolbar-expediente-label"
+            >
+              Abrir expediente
+            </button>
+          </div>
+        </div>
+        <div class="toolbar__row toolbar__row--modes no-print">
+          <div class="app-mode-switch app-mode-switch--wrap" role="tablist" aria-label="Módulo de trabajo">
+            <button type="button" class="app-mode-btn is-active" id="modo-calificaciones" role="tab" aria-selected="true"><span id="label-modo-calificaciones">Calificaciones</span></button>
+            <button type="button" class="app-mode-btn" id="modo-inasistencias" role="tab" aria-selected="false">Inasistencias</button>
+            <button type="button" class="app-mode-btn" id="modo-resumen-faltas" role="tab" aria-selected="false">Resumen faltas</button>
+            <button type="button" class="app-mode-btn" id="modo-resumen-area" role="tab" aria-selected="false">Resumen de área</button>
+            <button type="button" class="app-mode-btn" id="modo-mosaico-grupo" role="tab" aria-selected="false">Mosaico</button>
+          </div>
+        </div>
+        <div id="toolbar-carga-row" class="toolbar__row">
+          <div class="field-group field-group--grow">
+            <label for="buscar">Buscar estudiante</label>
+            <input type="search" id="buscar" class="input" placeholder="Nombre…" autocomplete="off" enterkeyhint="search">
+          </div>
+          <button type="button" id="btn-cargar" class="btn btn--primary">
+            <span class="btn__icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 018-8V2l3 3-3 3V6a6 6 0 100 12 6 6 0 006-6h2a8 8 0 01-8 8z" stroke="currentColor" stroke-width="2"/></svg>
+            </span>
+            Cargar grupo
+          </button>
+        </div>
+      </section>
+
+      <section id="vista-lista" class="view" aria-live="polite">
+        <div id="block-calificaciones" class="app-block app-block--calificaciones">
+        <div id="print-banner-grupo-cal" class="print-banner-embed print-banner-embed--cal" aria-hidden="true">
+          <p class="print-banner__org">Institución Educativa María Flor Servie · Calificaciones por curso</p>
+          <p class="print-banner__line" id="print-line-grupo-cal"></p>
+          <p class="print-banner__fecha" id="print-fecha-grupo-cal"></p>
+        </div>
+        <div class="section-title-row no-print">
+          <h2 class="section-title" id="titulo-vista-cal">Vista general del grupo</h2>
+          <button type="button" id="btn-imprimir-grupo-cal" class="btn btn--secondary btn--sm">
+            <span class="btn__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+            </span>
+            <span id="btn-text-imprimir-cal">Imprimir calificaciones del grupo</span>
+          </button>
+        </div>
+        <div class="card card--group-board">
+          <div id="lista" class="state-msg">Selecciona grupo y pulsa “Cargar grupo”.</div>
+          <div id="grupo-board-wrap" class="group-board-wrap is-hidden">
+            <table class="group-board">
+              <thead id="grupo-board-head"></thead>
+              <tbody id="grupo-board-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bulk-area is-hidden" id="bulk-area" aria-hidden="true">
+          <div class="card card--bulk no-print">
+            <div class="bulk-head">
+              <h3 class="card__title">Registro masivo de calificaciones</h3>
+              <label class="bulk-check">
+                <input type="checkbox" id="cr-solo-activos" checked>
+                <span>Solo activos</span>
+              </label>
+            </div>
+            <p class="card__hint card__hint--compact bulk-hint">Añade la <strong>misma evaluación</strong> (título y tipo) a <strong>varios estudiantes</strong> del grupo en una sola pasada.</p>
+
+            <div class="field-group field-group--full">
+              <label class="bulk-check bulk-check--block">
+                <input type="checkbox" id="cr-definitiva-triple" autocomplete="off">
+                <span>Nota única como definitiva del periodo (genera Seguimiento, Actitudinal y Prueba con la misma calificación)</span>
+              </label>
+            </div>
+
+            <div id="cr-definitiva-aviso" class="bulk-warning is-hidden" hidden role="region" aria-label="Aviso modo definitiva">
+              <p class="bulk-warning__title">Uso de esta opción</p>
+              <p class="bulk-warning__text">
+                Actívela cuando el <strong>periodo ya está cerrado</strong> y la calificación final debe figurar en los <strong>tres componentes</strong> sin cargar tres veces la misma nota.
+                Por cada estudiante con nota en la tabla, el sistema creará <strong>tres filas</strong> en la planilla: tipo <strong>Seguimiento</strong>, <strong>Actitudinal</strong> y <strong>Prueba</strong>,
+                con títulos «Seguimiento [materia]», «Actitudinal [materia]» y «Prueba [materia]», usando la <strong>materia elegida arriba</strong> y la <strong>misma nota</strong>.
+                Revise <strong>materia</strong>, <strong>grupo</strong> y <strong>periodo</strong> antes de guardar.
+              </p>
+            </div>
+
+            <div class="form-grid">
+              <div class="field-group field-group--full">
+                <label for="cr-titulo">Título de la evaluación (común a todos)</label>
+                <input type="text" id="cr-titulo" class="input" placeholder="Ej. Evaluación potenciación en racionales" autocomplete="off">
+              </div>
+              <div class="field-group">
+                <label for="cr-tipo">Tipo por defecto</label>
+                <select id="cr-tipo" class="input">
+                  <option value="Seguimiento">Seguimiento</option>
+                  <option value="Actitudinal">Actitudinal</option>
+                  <option value="Prueba">Prueba</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="cr-fecha">Fecha de la evaluación</label>
+                <input type="date" id="cr-fecha" class="input" title="Por defecto: hoy. Cambie si la calificación corresponde a otro día.">
+              </div>
+              <div class="field-group">
+                <label>Columnas visibles</label>
+                <div class="bulk-cols">
+                  <label><input type="checkbox" id="cr-col-estado" checked> Estado</label>
+                  <label><input type="checkbox" id="cr-col-tipo"> Tipo</label>
+                  <label><input type="checkbox" id="cr-col-nota" checked> Nota</label>
+                </div>
+              </div>
+            </div>
+
+            <div id="cr-sticky-title" class="bulk-sticky-title">Título: —</div>
+
+            <div id="cr-wrap" class="bulk-table-wrap" data-col-estado="on" data-col-tipo="off" data-col-nota="on">
+              <table class="bulk-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Estudiante</th>
+                    <th class="col-estado">Estado</th>
+                    <th class="col-tipo">Tipo</th>
+                    <th class="col-nota">Nota</th>
+                  </tr>
+                </thead>
+                <tbody id="cr-body"></tbody>
+              </table>
+            </div>
+
+            <div class="bulk-actions">
+              <span class="bulk-action-hint-wrap">
+                <button
+                  type="button"
+                  id="cr-limpiar"
+                  class="btn btn--ghost"
+                  title="Solo borra lo digitado aquí; no elimina notas ya guardadas."
+                >Vaciar notas escritas</button>
+                <span class="bulk-hover-tip" aria-hidden="true">
+                  Limpia únicamente las notas que escribiste en esta tabla y <strong>aún no están guardadas</strong>. No borra calificaciones que ya están en el sistema.
+                </span>
+              </span>
+              <button type="button" id="cr-guardar" class="btn btn--primary">Guardar calificaciones</button>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div id="block-inasistencias" class="app-block app-block--inasistencias is-hidden no-print" hidden>
+          <h2 class="section-title">Inasistencias a clase</h2>
+          <div class="card card--inasistencias-masivo no-print">
+            <div class="ina-head">
+              <h3 class="card__title">Registro del día</h3>
+              <label class="bulk-check">
+                <input type="checkbox" id="ina-solo-activos" checked>
+                <span>Solo activos</span>
+              </label>
+            </div>
+            <div class="ina-instrucciones" role="region" aria-label="Indicaciones para el registro de asistencia">
+              <p class="ina-instrucciones__title">Indicaciones</p>
+              <ol class="ina-instrucciones-list">
+                <li><strong>Elija la fecha</strong> en el calendario: por defecto aparece <strong>hoy</strong> para una clase nueva; puede cambiar a una <strong>fecha anterior</strong> para <strong>corregir en bloque</strong> la lista de ese día.</li>
+                <li><strong>Aquí registra o corrige las faltas</strong> de ese día y materia: la misma <strong>fecha</strong>, <strong>grupo</strong> y <strong>materia</strong> de arriba aplican a <strong>todo el curso</strong>.</li>
+                <li>Use los botones <strong>«Todos: Asistió»</strong> o <strong>«Todos: Faltó»</strong> si necesita marcar al grupo completo de una vez; luego puede ajustar alumno por alumno.</li>
+                <li>Marque quién <strong>faltó</strong>; el resto cuenta como <strong>asistencia</strong>. Pulse <strong>Guardar asistencia del día</strong>. También puede corregir un día concreto desde la <strong>ficha</strong> del estudiante.</li>
+              </ol>
+            </div>
+            <div class="form-grid ina-date-row">
+              <div class="field-group">
+                <label for="ina-fecha">Fecha de la clase</label>
+                <div class="ina-fecha-row">
+                  <input type="date" id="ina-fecha" class="input">
+                  <button type="button" id="ina-btn-hoy" class="btn btn--secondary btn--sm">Hoy</button>
+                </div>
+                <p class="field-hint ina-fecha-hint">
+                  Elija el día en el calendario y espere a que termine de cargar la tabla. Si cambia muy rápido de fecha,
+                  ignore la tabla hasta que no salga el mensaje de carga.
+                </p>
+              </div>
+              <div class="field-group">
+                <label for="ina-fechas-con-lista">Días ya registrados</label>
+                <select id="ina-fechas-con-lista" class="input">
+                  <option value="">— Ir a un día ya guardado —</option>
+                </select>
+                <p class="field-hint">
+                  Lista de fechas en las que ya hay asistencia guardada para este grupo y materia (más reciente arriba).
+                  Elija una para abrir ese día sin adivinar la fecha.
+                </p>
+              </div>
+            </div>
+            <p class="ina-date-banner" id="ina-fecha-larga" aria-live="polite"></p>
+            <div class="ina-masiva-actions no-print">
+              <span class="ina-masiva-actions__label">Marcar todo el grupo:</span>
+              <button type="button" id="ina-todos-asistio" class="btn btn--secondary btn--sm">Todos: Asistió</button>
+              <button type="button" id="ina-todos-falto" class="btn btn--secondary btn--sm">Todos: Faltó</button>
+              <span class="ina-masiva-actions__hint">Afecta a <strong>todo el curso</strong> en la base de este día. La búsqueda por nombre solo oculta filas; al guardar se envía el curso completo. Luego pulse guardar.</span>
+            </div>
+            <p class="ina-contexto-curso no-print" id="ina-contexto-grupo-materia" role="status" aria-live="polite"></p>
+            <div id="ina-wrap" class="bulk-table-wrap ina-table-wrap">
+              <table class="bulk-table ina-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Estudiante</th>
+                    <th class="col-estado">Estado</th>
+                    <th>Asistencia</th>
+                  </tr>
+                </thead>
+                <tbody id="ina-body"></tbody>
+              </table>
+            </div>
+            <div class="bulk-actions">
+              <button type="button" id="ina-guardar" class="btn btn--primary">Guardar asistencia del día</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="block-resumen-faltas" class="app-block app-block--resumen-faltas is-hidden" hidden>
+          <div id="print-banner-resumen-faltas" class="print-banner-embed print-banner-embed--rf" aria-hidden="true">
+            <p class="print-banner__org">Institución Educativa María Flor Servie · Resumen de faltas por periodo</p>
+            <p class="print-banner__line" id="print-line-resumen-faltas"></p>
+            <p class="print-banner__fecha" id="print-fecha-resumen-faltas"></p>
+          </div>
+          <div class="section-title-row no-print">
+            <h2 class="section-title">Resumen de faltas por periodo</h2>
+            <button type="button" id="btn-imprimir-resumen-faltas" class="btn btn--secondary btn--sm">
+              <span class="btn__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+              </span>
+              Imprimir resumen de faltas
+            </button>
+          </div>
+          <div class="card card--resumen-faltas">
+            <div class="rf-toolbar no-print">
+              <div class="field-group">
+                <label for="rf-periodo">Periodo académico</label>
+                <select id="rf-periodo" class="input"></select>
+              </div>
+              <button type="button" id="rf-actualizar" class="btn btn--secondary">Actualizar tabla</button>
+            </div>
+            <p id="rf-periodo-rango" class="rf-periodo-rango" aria-live="polite"></p>
+            <p id="rf-meta-lista" class="card__hint card__hint--compact"></p>
+            <p class="card__hint card__hint--compact rf-leyenda">
+              Los totales son por <strong>materia</strong> y por <strong>periodo</strong> elegidos arriba.
+              Para <strong>desertores</strong> e <strong>inactivos</strong>, cada día en que existió lista en esta materia cuenta en el total (no hace falta marcar F en el registro del día).
+              Los <strong>activos</strong> solo suman faltas cuando el docente las marca.
+              <strong>Matrícula cancelada</strong> o <strong>retirados</strong> no llevan control numérico en esta tabla (criterio institucional).
+            </p>
+            <div class="bulk-table-wrap rf-table-wrap rf-board-wrap">
+              <table class="bulk-table rf-table rf-board">
+                <thead id="rf-head"></thead>
+                <tbody id="rf-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="block-resumen-area" class="app-block app-block--resumen-area is-hidden" hidden>
+          <div id="print-banner-resumen-area" class="print-banner-embed print-banner-embed--ra" aria-hidden="true">
+            <p class="print-banner__org">Institución Educativa María Flor Servie · Resumen de área curricular</p>
+            <p class="print-banner__line" id="print-line-resumen-area"></p>
+            <p class="print-banner__fecha" id="print-fecha-resumen-area"></p>
+          </div>
+          <div class="section-title-row no-print">
+            <h2 class="section-title">Resumen de área · <span id="ra-titulo-area">—</span></h2>
+            <button type="button" id="btn-imprimir-resumen-area" class="btn btn--secondary btn--sm">
+              <span class="btn__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+              </span>
+              Imprimir resumen de área
+            </button>
+          </div>
+          <div class="card card--resumen-area">
+            <div class="ra-toolbar no-print">
+              <button type="button" id="ra-actualizar" class="btn btn--secondary">Actualizar tabla</button>
+            </div>
+            <p id="ra-formula" class="card__hint card__hint--compact" aria-live="polite"></p>
+            <div class="bulk-table-wrap ra-table-wrap">
+              <table class="bulk-table ra-table">
+                <thead id="ra-head"></thead>
+                <tbody id="ra-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="block-mosaico-grupo" class="app-block app-block--mosaico-grupo is-hidden" hidden>
+          <div id="print-banner-mosaico-grupo" class="print-banner-embed print-banner-embed--mosaico" aria-hidden="true">
+            <p class="print-banner__org">Institución Educativa María Flor Servie · Mosaico del grupo</p>
+            <p class="print-banner__line" id="print-line-mosaico-grupo"></p>
+            <p class="print-banner__fecha" id="print-fecha-mosaico-grupo"></p>
+          </div>
+          <div class="section-title-row no-print">
+            <h2 class="section-title">Mosaico del grupo · <span id="mg-titulo-grupo">—</span></h2>
+            <div class="section-title-row__actions">
+              <button type="button" id="mg-actualizar" class="btn btn--secondary btn--sm">Actualizar mosaico</button>
+              <button type="button" id="btn-imprimir-mosaico-grupo" class="btn btn--secondary btn--sm">
+                <span class="btn__icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+                </span>
+                Imprimir mosaico
+              </button>
+            </div>
+          </div>
+          <div class="card card--mosaico-grupo">
+            <p id="mg-hint" class="card__hint card__hint--compact" aria-live="polite">
+              Imagen única por grupo, tomada de la hoja <strong>MosaicosGrupo</strong> (columna A: grupo, columna B: URL pública o data URI <code>data:image/...;base64,...</code>).
+            </p>
+            <div id="mg-host" class="mosaico-host" aria-live="polite">
+              <div class="state-msg">Cargue el grupo para ver el mosaico.</div>
+            </div>
+            <p id="mg-meta" class="card__hint card__hint--compact" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="vista-panel" class="view view--panel is-hidden" hidden>
+        <div class="panel-head no-print">
+          <div class="panel-head__start">
+            <button type="button" id="btn-volver" class="btn btn--ghost">
+              <span aria-hidden="true">←</span> Volver al listado
+            </button>
+            <button
+              type="button"
+              id="btn-imprimir"
+              class="btn btn--secondary btn--sm"
+              title="Incluye calificaciones, estado de matrícula e inasistencias de la materia elegida en la barra superior."
+            >
+              <span class="btn__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+              </span>
+              Imprimir boletín
+            </button>
+          </div>
+          <div class="panel-head__meta">
+            <span id="ctx-grupo" class="chip"></span>
+            <span id="ctx-materia" class="chip chip--muted"></span>
+          </div>
+        </div>
+
+        <div id="boletin" class="boletin">
+          <div class="print-banner" aria-hidden="true">
+            <p class="print-banner__org">Institución Educativa María Flor Servie · Sistema de Notas</p>
+            <p class="print-banner__line"><span id="print-grupo"></span> · <span id="print-materia"></span></p>
+            <p class="print-banner__fecha" id="print-fecha"></p>
+            <p class="print-banner__estado" id="print-estado"></p>
+          </div>
+
+          <div class="student-title-row">
+            <!-- Foto ficha: hidden hasta reactivar (FICHA_ESTUDIANTE_FOTO_ACTIVA en src/app-core.js + quitar hidden aquí) -->
+            <div class="student-photo-frame" hidden aria-hidden="true">
+              <img
+                id="ficha-estudiante-foto"
+                class="student-photo-frame__img is-hidden"
+                alt=""
+                width="220"
+                height="330"
+                decoding="async"
+                loading="lazy"
+                hidden
+              />
+              <div id="ficha-estudiante-foto-fallback" class="student-photo-frame__fallback"></div>
+            </div>
+            <div class="student-title-main">
+              <h2 id="nombre" class="student-title"></h2>
+              <span id="estudiante-estado-chip" class="chip estado-chip estado-chip--activo" aria-label="Estado de matrícula"></span>
+            </div>
+          </div>
+          <p id="ficha-foto-hint" class="ficha-foto-hint no-print card__hint card__hint--compact is-hidden" hidden role="status" aria-live="polite"></p>
+
+          <div class="ficha-tabs app-mode-switch app-mode-switch--wrap no-print" role="tablist" aria-label="Secciones de la ficha del estudiante">
+            <button type="button" class="app-mode-btn is-active" id="ficha-tab-estado" role="tab" aria-selected="true" aria-controls="ficha-panel-estado">Estado y traslado</button>
+            <button type="button" class="app-mode-btn" id="ficha-tab-cal" role="tab" aria-selected="false" aria-controls="ficha-panel-cal">Calificaciones</button>
+            <button type="button" class="app-mode-btn" id="ficha-tab-faltas" role="tab" aria-selected="false" aria-controls="ficha-panel-faltas">Faltas</button>
+          </div>
+
+          <div id="ficha-panel-estado" class="ficha-panel" role="tabpanel" aria-labelledby="ficha-tab-estado">
+          <div class="card card--estado no-print" id="card-estado-matricula">
+            <h3 class="card__title">Situación de matrícula</h3>
+            <p id="estado-hint-coord" class="card__hint card__hint--compact">
+              Puede cambiar el estado de matrícula con la <strong>clave de administración</strong> y <strong>Guardar situación</strong>.
+            </p>
+            <p id="estado-hint-docente" class="card__hint card__hint--compact is-hidden" hidden>
+              El estado de matrícula es único por estudiante y lo actualiza la administración. Aquí solo puede <strong>consultar</strong> el valor actual.
+            </p>
+            <div id="estado-form-editable" class="estado-form">
+              <div class="field-group">
+                <label for="estado-matricula">Estado</label>
+                <select id="estado-matricula" class="input"></select>
+              </div>
+              <div class="field-group">
+                <label for="estado-motivo">Motivo (opcional)</label>
+                <input type="text" id="estado-motivo" class="input" placeholder="Ej. Comunicación familiar" autocomplete="off">
+              </div>
+              <div class="field-group">
+                <label for="estado-clave-admin">Clave de administración</label>
+                <input type="password" id="estado-clave-admin" class="input" autocomplete="off" placeholder="Requerida para guardar el cambio">
+              </div>
+              <div class="estado-actions">
+                <button type="button" id="btn-guardar-estado" class="btn btn--secondary">Guardar situación</button>
+              </div>
+            </div>
+            <div id="estado-docente-solo-vista" class="estado-docente-solo-vista is-hidden" hidden>
+              <p class="estado-valor-actual">
+                Estado actual: <strong id="estado-valor-texto">—</strong>
+              </p>
+            </div>
+            <div class="estado-actions estado-actions--historial">
+              <button type="button" id="btn-historial-estado" class="btn btn--ghost">Historial de cambios</button>
+            </div>
+          </div>
+
+          <div class="card card--reubicacion no-print">
+            <h3 class="card__title">Cambio de curso (traslado)</h3>
+            <p class="card__hint card__hint--compact">Use esta opción cuando el estudiante pase a otro grupo. El sistema actualizará su curso y <strong>todas</strong> sus calificaciones de forma integrada. El motivo queda registrado para auditoría.</p>
+            <p class="card__hint card__hint--compact">Curso actual: <strong id="traslado-grupo-actual-label">—</strong></p>
+            <div class="field-group">
+              <label for="traslado-grupo-destino">Curso de destino</label>
+              <select id="traslado-grupo-destino" class="input"></select>
+            </div>
+            <div class="field-group">
+              <label for="reubicacion-motivo">Motivo (opcional)</label>
+              <input type="text" id="reubicacion-motivo" class="input" placeholder="Ej. Traslado oficial de curso" autocomplete="off">
+            </div>
+            <div class="field-group">
+              <label for="traslado-clave-admin">Clave de administración</label>
+              <input type="password" id="traslado-clave-admin" class="input" autocomplete="off" placeholder="Misma clave que para cambiar situación de matrícula">
+              <p class="field-hint">Solo está disponible en sesión de coordinación; usa la misma clave que para cambiar situación de matrícula.</p>
+            </div>
+            <button type="button" id="btn-traslado-curso" class="btn btn--secondary">Confirmar traslado</button>
+          </div>
+          </div>
+
+          <div id="ficha-panel-cal" class="ficha-panel" role="tabpanel" aria-labelledby="ficha-tab-cal" hidden>
+          <p class="card__hint card__hint--compact ficha-tab-lead no-print">
+            <strong>Materia:</strong> <span id="ficha-cal-materia-nombre" class="ficha-materia-badge">—</span>
+            · Resumen de seguimiento, actitudinal, prueba y definitiva.
+          </p>
+          <div id="resumen" class="card card--resumen"></div>
+
+          <div id="ficha-anadir-nota-wrap" class="card no-print is-hidden" hidden>
+            <h3 class="card__title">Registrar o corregir calificación (solo este estudiante)</h3>
+            <p class="card__hint card__hint--compact">
+              Elija la misma evaluación que usó en el registro masivo del grupo: el título coincide con el de la hoja y no se duplica por un error de escritura. Si ya hay nota para ese ítem, se <strong>actualiza</strong> la misma fila. No afecta a los demás estudiantes.
+            </p>
+            <p id="ficha-nueva-hint-grupo" class="card__hint card__hint--compact is-hidden" hidden></p>
+            <div class="form-grid">
+              <div class="field-group field-group--full">
+                <label for="ficha-nueva-eval">Evaluación (títulos del grupo en esta materia y periodo)</label>
+                <select id="ficha-nueva-eval" class="input">
+                  <option value="">— Elija la evaluación del grupo —</option>
+                </select>
+                <p class="field-hint" style="margin-top:0.25rem">Lista tomada de las notas ya cargadas del curso. Si está vacía, pulse «Cargar grupo» en la vista general y vuelva aquí.</p>
+              </div>
+              <div id="ficha-nueva-manual-wrap" class="field-group field-group--full is-hidden" hidden>
+                <div class="form-grid">
+                  <div class="field-group">
+                    <label for="ficha-nueva-tipo">Tipo</label>
+                    <select id="ficha-nueva-tipo" class="input">
+                      <option value="Seguimiento">Seguimiento</option>
+                      <option value="Actitudinal">Actitudinal</option>
+                      <option value="Prueba">Prueba</option>
+                    </select>
+                  </div>
+                  <div class="field-group field-group--full">
+                    <label for="ficha-nueva-titulo">Título (exacto)</label>
+                    <input type="text" id="ficha-nueva-titulo" class="input" placeholder="Ej. Seguimiento Estadística" autocomplete="off">
+                  </div>
+                </div>
+              </div>
+              <div class="field-group">
+                <label for="ficha-nueva-nota">Nota</label>
+                <input type="number" id="ficha-nueva-nota" class="input" min="0" max="5" step="0.1" placeholder="0.0" inputmode="decimal">
+              </div>
+              <div class="field-group">
+                <label for="ficha-nueva-fecha">Fecha</label>
+                <input type="date" id="ficha-nueva-fecha" class="input" required>
+                <p class="field-hint" style="margin-top:0.25rem">Debe caer en el periodo elegido arriba en «Periodo (notas del grupo)». Si la fecha no coincide con ese periodo, el servidor rechaza el guardado (no es solo advertencia).</p>
+                <p id="ficha-nueva-fecha-rango-periodo" class="field-hint" style="margin-top:0.35rem" hidden></p>
+              </div>
+            </div>
+            <p id="ficha-nueva-accion-hint" class="card__hint card__hint--compact" style="margin-top:0.5rem"></p>
+            <div class="estado-actions" style="margin-top:0.75rem">
+              <button type="button" id="ficha-nueva-guardar" class="btn btn--secondary">Guardar calificación</button>
+            </div>
+          </div>
+
+          <div class="notes-block">
+            <h3 class="section-title section-title--small">Calificaciones registradas</h3>
+            <div id="notas" class="notes-list"></div>
+          </div>
+          </div>
+
+          <div id="ficha-panel-faltas" class="ficha-panel" role="tabpanel" aria-labelledby="ficha-tab-faltas" hidden>
+          <div class="card card--inasistencias-alumno no-print">
+            <h3 class="card__title">Inasistencias</h3>
+            <p class="card__hint card__hint--compact">
+              <strong>Materia:</strong> <span id="ficha-faltas-materia-nombre" class="ficha-materia-badge">—</span><span id="ficha-faltas-hint-trailer"></span>
+            </p>
+            <div id="ina-estudiante-lista" class="ina-estudiante-lista"></div>
+          </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer no-print" role="contentinfo">
+      <p>IEMFS</p>
+    </footer>
+
+    <div id="toast-host" class="toast-host no-print" aria-live="polite" aria-relevant="additions"></div>
+
+    <div
+      id="app-busy-overlay"
+      class="app-busy-overlay is-hidden no-print"
+      hidden
+      aria-hidden="true"
+      aria-busy="true"
+    >
+      <div class="app-busy-overlay__panel card" role="status">
+        <span class="spinner app-busy-overlay__spinner" aria-hidden="true"></span>
+        <p id="app-busy-msg" class="app-busy-overlay__text">
+          Guardando calificaciones… Espere un momento; no cierre la ventana.
+        </p>
+      </div>
+    </div>
+
+    <div id="modal-backdrop" class="modal-backdrop is-hidden no-print" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal__head">
+          <h2 id="modal-title" class="modal__title">Editar</h2>
+          <button type="button" id="modal-cerrar" class="btn btn--icon" aria-label="Cerrar">×</button>
+        </div>
+        <div id="modal-body" class="modal__body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=88"></script>
+</body>
+</html>

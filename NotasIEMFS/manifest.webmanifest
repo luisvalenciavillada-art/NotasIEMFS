@@ -1,0 +1,20 @@
+{
+  "name": "Sistema de Notas IEMFS",
+  "short_name": "Notas IEMFS",
+  "description": "Registro y seguimiento de calificaciones por grupo y materia.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#d8e6f4",
+  "theme_color": "#075985",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

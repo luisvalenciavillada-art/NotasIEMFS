@@ -1,0 +1,11 @@
+{
+  "name": "notas-iemfs",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --minify --target=es2020 --outfile=app.js --legal-comments=none",
+    "watch": "esbuild src/main.js --bundle --minify --target=es2020 --outfile=app.js --watch --legal-comments=none"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  }
+}
