@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://script.google.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=42">
+  <link rel="stylesheet" href="styles.css?v=43">
 </head>
 <body>
 
@@ -194,7 +194,7 @@
             <div class="bulk-head">
               <h3 class="card__title">Registro masivo de calificaciones</h3>
               <label class="bulk-check">
-                <input type="checkbox" id="cr-solo-activos" checked>
+                <input type="checkbox" id="cr-solo-activos">
                 <span>Solo activos</span>
               </label>
             </div>
@@ -237,7 +237,7 @@
               <div class="field-group">
                 <label>Columnas visibles</label>
                 <div class="bulk-cols">
-                  <label><input type="checkbox" id="cr-col-estado" checked> Estado</label>
+                  <label><input type="checkbox" id="cr-col-estado"> Estado</label>
                   <label><input type="checkbox" id="cr-col-tipo"> Tipo</label>
                   <label><input type="checkbox" id="cr-col-nota" checked> Nota</label>
                 </div>
@@ -285,7 +285,7 @@
             <div class="ina-head">
               <h3 class="card__title">Registro del día</h3>
               <label class="bulk-check">
-                <input type="checkbox" id="ina-solo-activos" checked>
+                <input type="checkbox" id="ina-solo-activos">
                 <span>Solo activos</span>
               </label>
             </div>
@@ -369,6 +369,14 @@
                 <label for="rf-periodo">Periodo académico</label>
                 <select id="rf-periodo" class="input"></select>
               </div>
+              <label class="bulk-check">
+                <input type="checkbox" id="rf-col-estado">
+                <span>Ver estado</span>
+              </label>
+              <label class="bulk-check">
+                <input type="checkbox" id="rf-col-num">
+                <span>Ver #</span>
+              </label>
               <button type="button" id="rf-actualizar" class="btn btn--secondary">Actualizar tabla</button>
             </div>
             <p id="rf-periodo-rango" class="rf-periodo-rango" aria-live="polite"></p>
@@ -379,7 +387,7 @@
               Los <strong>activos</strong> solo suman faltas cuando el docente las marca.
               <strong>Matrícula cancelada</strong> o <strong>retirados</strong> no llevan control numérico en esta tabla (criterio institucional).
             </p>
-            <div class="bulk-table-wrap rf-table-wrap rf-board-wrap">
+            <div id="rf-wrap" class="bulk-table-wrap rf-table-wrap rf-board-wrap" data-show-estado="off" data-show-num="off">
               <table class="bulk-table rf-table rf-board">
                 <thead id="rf-head"></thead>
                 <tbody id="rf-body"></tbody>

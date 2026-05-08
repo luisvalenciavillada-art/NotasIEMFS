@@ -248,6 +248,52 @@ body {
   font-weight: 500;
 }
 
+@media (max-width: 720px) {
+  .app-header {
+    /* Más aire antes de la zona blanca (toolbar) en móvil */
+    padding: 0.95rem 0.85rem calc(1.35rem + env(safe-area-inset-top, 0px));
+  }
+
+  .app-header__inner {
+    max-width: none;
+  }
+
+  .app-header__row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .app-header__actions {
+    order: -1;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 0;
+    gap: 0.4rem;
+  }
+
+  .auth-session-badge {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.25;
+  }
+
+  .app-brand__subtitle {
+    font-size: 0.8rem;
+    line-height: 1.28;
+    text-wrap: balance;
+    max-width: 100%;
+  }
+
+  /* En escritorio el solape se ve bien; en móvil se siente muy pegado. */
+  .card--toolbar {
+    margin-top: -1.1rem;
+  }
+}
+
 .container {
   max-width: 920px;
   margin: 0 auto;
@@ -366,6 +412,10 @@ body {
 .bulk-table-wrap {
   max-height: 340px;
   overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
@@ -399,6 +449,49 @@ body {
 
 .bulk-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* # y Estudiante fijos al desplazar horizontalmente (móvil) */
+.bulk-table th:nth-child(1),
+.bulk-table td:nth-child(1) {
+  min-width: 2.35rem;
+  max-width: 2.35rem;
+  width: 2.35rem;
+  text-align: center;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--surface);
+  box-shadow: 3px 0 8px -4px rgba(0, 0, 0, 0.12);
+}
+
+.bulk-table th:nth-child(2),
+.bulk-table td:nth-child(2) {
+  position: sticky;
+  left: 2.35rem;
+  z-index: 2;
+  background: var(--surface);
+  box-shadow: 4px 0 10px -5px rgba(0, 0, 0, 0.14);
+  min-width: 7.25rem;
+  max-width: min(13rem, 48vw);
+}
+
+.bulk-table thead th:nth-child(1),
+.bulk-table thead th:nth-child(2) {
+  z-index: 5;
+}
+
+.bulk-table tbody td:nth-child(2) {
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: middle;
+}
+
+[data-theme="dark"] .bulk-table th:nth-child(1),
+[data-theme="dark"] .bulk-table td:nth-child(1),
+[data-theme="dark"] .bulk-table th:nth-child(2),
+[data-theme="dark"] .bulk-table td:nth-child(2) {
+  background: var(--surface);
 }
 
 .bulk-table .input {
@@ -463,6 +556,121 @@ body {
 @media (hover: none) {
   .bulk-hover-tip {
     display: none;
+  }
+}
+
+.btn-ver-detalle__short {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .bulk-table-wrap {
+    max-height: min(52vh, 400px);
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  .bulk-table {
+    min-width: 390px;
+  }
+
+  .bulk-table th,
+  .bulk-table td {
+    padding: 0.42rem 0.45rem;
+  }
+
+  /* En móvil, mantener nombre fijo pero sin ocupar medio ancho. */
+  .bulk-table th:nth-child(1),
+  .bulk-table td:nth-child(1) {
+    min-width: 2.1rem;
+    max-width: 2.1rem;
+    width: 2.1rem;
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: var(--surface);
+    box-shadow: 2px 0 6px -4px rgba(0, 0, 0, 0.12);
+  }
+
+  .bulk-table th:nth-child(2),
+  .bulk-table td:nth-child(2) {
+    position: sticky;
+    left: 2.1rem;
+    z-index: 3;
+    background: var(--surface);
+    box-shadow: 3px 0 8px -5px rgba(0, 0, 0, 0.12);
+    min-width: 8rem;
+    max-width: 58vw;
+  }
+
+  .bulk-table thead th:nth-child(1),
+  .bulk-table thead th:nth-child(2) {
+    z-index: 6;
+  }
+
+  .bulk-table .col-nota .input {
+    width: 66px;
+    min-width: 66px;
+  }
+
+  /* Si Estado y Tipo están apagados, acercar aún más la columna Nota. */
+  #cr-wrap[data-col-estado="off"][data-col-tipo="off"] .bulk-table {
+    min-width: 330px;
+  }
+
+  #cr-wrap[data-col-estado="off"][data-col-tipo="off"] .bulk-table th:nth-child(2),
+  #cr-wrap[data-col-estado="off"][data-col-tipo="off"] .bulk-table td:nth-child(2) {
+    max-width: 62vw;
+  }
+
+  #cr-wrap[data-col-estado="off"][data-col-tipo="off"] .bulk-table th.col-nota,
+  #cr-wrap[data-col-estado="off"][data-col-tipo="off"] .bulk-table td.col-nota {
+    min-width: 4.5rem;
+  }
+
+  .bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .bulk-action-hint-wrap,
+  .bulk-actions .btn {
+    width: 100%;
+  }
+
+  .bulk-actions .btn {
+    justify-content: center;
+  }
+
+  .btn-ver-detalle__long {
+    display: none;
+  }
+
+  .btn-ver-detalle__short {
+    display: inline;
+  }
+
+  .app-mode-switch {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .app-mode-btn {
+    flex: 1 1 calc(50% - 0.2rem);
+    min-width: 0;
+    padding: 0.42rem 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .container {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
   }
 }
 
@@ -865,6 +1073,109 @@ body {
   .group-board th.group-board__nota,
   .group-board td.group-board__nota {
     min-width: clamp(3.75rem, 24vw, 6.5rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .group-board thead .group-board__estado,
+  .group-board tbody .group-board__estado {
+    display: none;
+  }
+
+  .group-board {
+    --gb-student-w: clamp(8.2rem, 44vw, 11.5rem);
+    --gb-detalle-w: 3.9rem;
+    min-width: max(100%, 430px);
+  }
+
+  .group-board__student {
+    max-width: none;
+  }
+
+  .group-board__student strong {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .group-board__detalle .btn {
+    padding: 0.38rem 0.28rem;
+    font-size: 0.68rem;
+  }
+
+  .group-board-wrap {
+    max-height: min(58vh, 520px);
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  /* El botón de detalle fijo a la derecha tapaba notas y frenaba el scroll horizontal.
+     En móvil queda como columna normal al final de la tabla. */
+  .group-board tbody .group-board__detalle {
+    position: static;
+    right: auto;
+    box-shadow: none;
+    z-index: auto;
+    background: var(--surface);
+  }
+
+  /* Pero el encabezado "DETALLE" sí debe quedarse fijo arriba al hacer scroll vertical */
+  .group-board thead th.group-board__detalle {
+    position: sticky; /* sticky-top */
+    top: 0;
+    right: auto; /* no sticky-right */
+    box-shadow: none;
+    background: var(--surface-elevated);
+    z-index: 9;
+  }
+
+  .group-board td.group-board__nota,
+  .group-board th.group-board__nota {
+    min-width: clamp(2.6rem, 14vw, 3.3rem);
+    padding-left: 0.32rem;
+    padding-right: 0.32rem;
+  }
+
+  /* Encabezados de notas: permitir 2 líneas (evita recorte) */
+  .group-board thead th.group-board__nota {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.15;
+    font-size: 0.68rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  /* Encabezado "Ficha": que no “corte” el título de la nota */
+  .group-board thead th.group-board__detalle {
+    vertical-align: bottom;
+    white-space: nowrap;
+    font-size: 0.66rem;
+    min-width: 4.2rem;
+    text-align: center;
+    z-index: 9;
+  }
+
+  /* Al desplazar vertical/horizontal, los botones Ficha pasan por debajo del encabezado */
+  .group-board tbody td.group-board__detalle {
+    z-index: 1;
+  }
+
+  .group-board thead th.group-board__nota {
+    z-index: 5;
+  }
+
+  /* "Estudiante" debe quedar por encima y ocultar cualquier título de nota al deslizar */
+  .group-board thead th.group-board__student {
+    z-index: 12;
+    background: var(--surface-elevated);
+    box-shadow: 6px 0 12px -8px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -2297,6 +2608,11 @@ body {
     font-size: 7pt !important;
   }
 
+  html.print-mode-grupo-cal .group-board thead .group-board__estado,
+  html.print-mode-grupo-cal .group-board tbody .group-board__estado {
+    display: table-cell !important;
+  }
+
   html.print-mode-grupo-cal .group-board th,
   html.print-mode-grupo-cal .group-board td {
     padding: 0.1rem 0.22rem !important;
@@ -2905,6 +3221,7 @@ body {
   overflow-x: auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
   overscroll-behavior-x: contain;
 }
 
@@ -3000,6 +3317,26 @@ body {
   color: var(--text-muted);
 }
 
+#rf-wrap[data-show-estado="off"] .rf__estado {
+  display: none;
+}
+
+#rf-wrap[data-show-num="off"] .rf__num {
+  display: none;
+}
+
+#rf-wrap[data-show-num="off"] .rf__student {
+  left: 0 !important;
+}
+
+#rf-wrap[data-show-num="on"] .rf__num {
+  display: table-cell;
+}
+
+#rf-wrap[data-show-num="on"] .rf__student {
+  left: var(--rf-num-w) !important;
+}
+
 [data-theme="dark"] .rf-board .rf__sticky,
 [data-theme="dark"] .rf-board .rf__sticky-end {
   background: var(--surface);
@@ -3014,6 +3351,82 @@ body {
   .rf-board {
     --rf-student-w: clamp(6.75rem, 36vw, 11rem);
     --rf-estado-w: clamp(4.5rem, 20vw, 6rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .rf-table-wrap.rf-board-wrap {
+    max-height: min(58vh, 520px);
+    touch-action: pan-x pan-y;
+  }
+
+  .rf-board {
+    min-width: max(100%, 430px);
+    --rf-num-w: 0rem;
+    --rf-student-w: clamp(6.2rem, 40vw, 9rem);
+    --rf-total-w: 3.6rem;
+  }
+
+  /* En móvil quitamos la numeración para ganar espacio útil */
+  .rf-board .rf__num,
+  .rf-board thead .rf__num {
+    display: none;
+  }
+
+  /* Mantener # y estudiante fijos */
+  .rf-board .rf__num {
+    z-index: 3;
+  }
+
+  .rf-board .rf__student {
+    left: 0;
+    z-index: 3;
+  }
+
+  .rf-board .rf__student strong {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.15;
+    margin-bottom: 0.2rem;
+  }
+
+  .rf-board .rf__student .ina-ficha-btn {
+    margin-left: 0;
+    padding: 0.28rem 0.45rem;
+    font-size: 0.74rem;
+  }
+
+  /* Total faltas sin sticky-right para no bloquear el arrastre horizontal */
+  .rf-board .rf__sticky-end {
+    position: static;
+    right: auto;
+    box-shadow: none;
+    z-index: 1;
+    min-width: var(--rf-total-w);
+  }
+
+  .rf-board thead .rf__sticky-end {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: var(--surface);
+  }
+
+  .rf-board .rf__fecha {
+    min-width: 2.35rem;
+    max-width: 2.9rem;
+    font-size: 0.68rem;
+    padding-left: 0.22rem;
+    padding-right: 0.22rem;
+  }
+
+  #rf-wrap[data-show-estado="on"] .rf-board {
+    min-width: max(100%, 560px);
+    --rf-estado-w: clamp(4.4rem, 20vw, 5.6rem);
   }
 }
 
