@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://script.google.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=43">
+  <link rel="stylesheet" href="styles.css?v=53">
 </head>
 <body>
 
@@ -146,6 +146,7 @@
             <button type="button" class="app-mode-btn" id="modo-inasistencias" role="tab" aria-selected="false">Inasistencias</button>
             <button type="button" class="app-mode-btn" id="modo-resumen-faltas" role="tab" aria-selected="false">Resumen faltas</button>
             <button type="button" class="app-mode-btn" id="modo-resumen-area" role="tab" aria-selected="false">Resumen de área</button>
+            <button type="button" class="app-mode-btn" id="modo-definitiva-anual" role="tab" aria-selected="false">Nota anual</button>
             <button type="button" class="app-mode-btn" id="modo-mosaico-grupo" role="tab" aria-selected="false">Mosaico</button>
           </div>
         </div>
@@ -172,12 +173,20 @@
         </div>
         <div class="section-title-row no-print">
           <h2 class="section-title" id="titulo-vista-cal">Vista general del grupo</h2>
-          <button type="button" id="btn-imprimir-grupo-cal" class="btn btn--secondary btn--sm">
-            <span class="btn__icon" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
-            </span>
-            <span id="btn-text-imprimir-cal">Imprimir calificaciones del grupo</span>
-          </button>
+          <div class="section-title-row__actions">
+            <button type="button" id="btn-imprimir-grupo-cal" class="btn btn--secondary btn--sm">
+              <span class="btn__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+              </span>
+              <span id="btn-text-imprimir-cal">Imprimir calificaciones del grupo</span>
+            </button>
+            <button type="button" id="btn-exportar-grupo-cal" class="btn btn--secondary btn--sm" title="Descarga un archivo CSV para abrir en Excel o importar en el PC académico">
+              <span class="btn__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              Descargar Excel
+            </button>
+          </div>
         </div>
         <div class="card card--group-board">
           <div id="lista" class="state-msg">Selecciona grupo y pulsa “Cargar grupo”.</div>
@@ -404,12 +413,20 @@
           </div>
           <div class="section-title-row no-print">
             <h2 class="section-title">Resumen de área · <span id="ra-titulo-area">—</span></h2>
-            <button type="button" id="btn-imprimir-resumen-area" class="btn btn--secondary btn--sm">
-              <span class="btn__icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
-              </span>
-              Imprimir resumen de área
-            </button>
+            <div class="section-title-row__actions">
+              <button type="button" id="btn-imprimir-resumen-area" class="btn btn--secondary btn--sm">
+                <span class="btn__icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+                </span>
+                Imprimir resumen de área
+              </button>
+              <button type="button" id="btn-exportar-resumen-area" class="btn btn--secondary btn--sm" title="Descarga un archivo CSV para abrir en Excel o importar en el PC académico">
+                <span class="btn__icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                Descargar Excel
+              </button>
+            </div>
           </div>
           <div class="card card--resumen-area">
             <div class="ra-toolbar no-print">
@@ -420,6 +437,36 @@
               <table class="bulk-table ra-table">
                 <thead id="ra-head"></thead>
                 <tbody id="ra-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="block-definitiva-anual" class="app-block app-block--definitiva-anual is-hidden" hidden>
+          <div id="print-banner-definitiva-anual" class="print-banner-embed print-banner-embed--na" aria-hidden="true">
+            <p class="print-banner__org">Institución Educativa María Flor Servie · Definitiva del año</p>
+            <p class="print-banner__line" id="print-line-definitiva-anual"></p>
+            <p class="print-banner__fecha" id="print-fecha-definitiva-anual"></p>
+          </div>
+          <div class="section-title-row no-print">
+            <h2 class="section-title">Definitiva del año · <span id="na-titulo-contexto">—</span></h2>
+            <div class="section-title-row__actions">
+              <button type="button" id="na-actualizar" class="btn btn--secondary btn--sm">Actualizar tabla</button>
+              <button type="button" id="btn-imprimir-definitiva-anual" class="btn btn--secondary btn--sm">
+                <span class="btn__icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2"/></svg>
+                </span>
+                Imprimir nota anual
+              </button>
+            </div>
+          </div>
+          <div class="card card--definitiva-anual">
+            <p id="na-formula" class="card__hint card__hint--compact" aria-live="polite"></p>
+            <div id="na-estudiante-host" class="na-estudiante-host is-hidden" hidden aria-live="polite"></div>
+            <div id="na-grupo-wrap" class="bulk-table-wrap na-table-wrap">
+              <table class="bulk-table na-table">
+                <thead id="na-head"></thead>
+                <tbody id="na-body"></tbody>
               </table>
             </div>
           </div>
@@ -677,6 +724,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=90"></script>
+  <script src="app.js?v=96"></script>
 </body>
 </html>
