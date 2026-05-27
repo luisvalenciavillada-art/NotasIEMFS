@@ -2563,11 +2563,11 @@ body {
     overflow: visible !important;
   }
 
-  /* Firefox PDF: evitar páginas en blanco por sticky + min-width en tablas. */
+  /* Firefox PDF: tabla sin sticky; auto reparte mejor las columnas de notas. */
   html.print-mode-grupo-cal .group-board {
     min-width: 0 !important;
     width: 100% !important;
-    table-layout: fixed;
+    table-layout: auto !important;
   }
 
   html.print-mode-grupo-cal .group-board th {
@@ -2649,6 +2649,7 @@ body {
   /** Estado, detalle/ficha y observaciones: solo en pantalla. */
   html.print-mode-grupo-cal .group-board__estado,
   html.print-mode-grupo-cal .group-board__detalle,
+  html.print-mode-grupo-cal .btn-ver-detalle,
   html.print-mode-resumen-faltas .rf-board .rf__estado,
   html.print-mode-resumen-faltas .col-estado,
   html.print-mode-resumen-area .col-observaciones,
@@ -2688,12 +2689,125 @@ body {
   html.print-mode-grupo-cal .group-board .group-board__num {
     width: 4% !important;
     text-align: center !important;
+    white-space: nowrap !important;
   }
 
   html.print-mode-grupo-cal .group-board .group-board__student {
-    width: 36% !important;
+    width: 26% !important;
     max-width: none !important;
     overflow: hidden;
+  }
+
+  html.print-mode-grupo-cal .group-board th.group-board__nota,
+  html.print-mode-grupo-cal .group-board td.group-board__nota {
+    display: table-cell !important;
+    visibility: visible !important;
+    min-width: 2.4rem !important;
+    width: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  /** Varias evaluaciones: títulos en vertical (ahorra ancho; clave con ~10 columnas). */
+  html.print-mode-grupo-cal.print-mode-gc-notas-vert .group-board {
+    table-layout: fixed !important;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-notas-vert .group-board .group-board__student {
+    width: 22% !important;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-notas-vert .group-board thead th.group-board__nota {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: normal !important;
+    min-width: 1.75em !important;
+    max-width: 2.55em !important;
+    width: 2.05em !important;
+    padding: 0.12rem 0.04rem 0.2rem !important;
+    font-size: 6pt !important;
+    line-height: 1.06 !important;
+    vertical-align: bottom !important;
+    text-align: center !important;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 7.5em;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-notas-vert .group-board td.group-board__nota {
+    min-width: 1.75em !important;
+    width: 2.05em !important;
+    max-width: 2.55em !important;
+    padding: 0.05rem 0.04rem !important;
+    font-size: 7pt !important;
+  }
+
+  /* ≥3 evaluaciones: N1, N2… arriba y leyenda con título completo debajo de la tabla. */
+  .print-cal-leyenda-notas {
+    display: none;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .print-cal-leyenda-notas {
+    display: block !important;
+    margin-top: 0.28rem;
+    padding-top: 0.22rem;
+    border-top: 1px solid #bbb;
+    font-size: 6.5pt;
+    line-height: 1.22;
+    color: #111;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .print-cal-leyenda-notas__titulo {
+    margin: 0 0 0.12rem;
+    font-weight: 700;
+    font-size: 6.5pt;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .print-cal-leyenda-notas__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.08rem 0.55rem;
+    column-gap: 0.75rem;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .print-cal-leyenda-notas__grid span {
+    white-space: normal;
+    max-width: 48%;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .group-board {
+    table-layout: fixed !important;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .group-board .group-board__student {
+    width: 24% !important;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .group-board thead th.group-board__nota {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+    min-width: 1.4em !important;
+    width: 1.6em !important;
+    max-width: 1.85em !important;
+    padding: 0.06rem 0.02rem !important;
+    font-size: 6.5pt !important;
+    line-height: 1.05 !important;
+    vertical-align: bottom !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-height: none !important;
+  }
+
+  html.print-mode-grupo-cal.print-mode-gc-leyenda-notas .group-board td.group-board__nota {
+    min-width: 1.4em !important;
+    width: 1.6em !important;
+    max-width: 1.85em !important;
+    padding: 0.05rem 0.02rem !important;
+    font-size: 7pt !important;
   }
 
   html.print-mode-grupo-cal .group-board__student strong {

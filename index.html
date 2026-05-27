@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://script.google.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=54">
+  <link rel="stylesheet" href="styles.css?v=57">
 </head>
 <body>
 
@@ -189,6 +189,7 @@
           </div>
         </div>
         <div class="card card--group-board">
+          <p id="grupo-board-sin-notas-hint" class="card__hint card__hint--compact is-hidden" hidden role="status" aria-live="polite"></p>
           <div id="lista" class="state-msg">Selecciona grupo y pulsa “Cargar grupo”.</div>
           <div id="grupo-board-wrap" class="group-board-wrap is-hidden">
             <table class="group-board">
@@ -196,6 +197,7 @@
               <tbody id="grupo-board-body"></tbody>
             </table>
           </div>
+          <div id="print-cal-leyenda-notas" class="print-cal-leyenda-notas is-hidden" hidden aria-hidden="true"></div>
         </div>
 
         <div class="bulk-area is-hidden" id="bulk-area" aria-hidden="true">
@@ -724,6 +726,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=96"></script>
+  <script src="app.js?v=99"></script>
 </body>
 </html>
