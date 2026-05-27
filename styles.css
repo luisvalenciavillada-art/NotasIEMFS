@@ -2646,8 +2646,9 @@ body {
     margin-top: 0.2rem !important;
   }
 
-  /** Estado / observaciones: solo en pantalla (no en impresión de listados). */
+  /** Estado, detalle/ficha y observaciones: solo en pantalla. */
   html.print-mode-grupo-cal .group-board__estado,
+  html.print-mode-grupo-cal .group-board__detalle,
   html.print-mode-resumen-faltas .rf-board .rf__estado,
   html.print-mode-resumen-faltas .col-estado,
   html.print-mode-resumen-area .col-observaciones,
@@ -2689,16 +2690,18 @@ body {
     text-align: center !important;
   }
 
+  html.print-mode-grupo-cal .group-board .group-board__student {
+    width: 36% !important;
+    max-width: none !important;
+    overflow: hidden;
+  }
+
   html.print-mode-grupo-cal .group-board__student strong {
-    display: inline-block !important;
+    display: block !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-  }
-
-  html.print-mode-grupo-cal .group-board__detalle .btn {
-    white-space: nowrap !important;
-    line-height: 1.1 !important;
+    font-weight: 600 !important;
   }
 
   html.print-mode-grupo-cal .card--group-board {
